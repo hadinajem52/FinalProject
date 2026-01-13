@@ -29,6 +29,9 @@
     "plugins": [
       "expo-web-browser"
     ],
-    "scheme": "safesignal"
+    "scheme": [
+      "safesignal",
+      "com.googleusercontent.apps.148707906240-g25bk9eiiec29k9dt807hebmbqa64v2b"
+    ]
   }
 }

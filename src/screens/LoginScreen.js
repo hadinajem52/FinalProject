@@ -26,11 +26,16 @@ const LoginScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const googleAndroidClientId = '148707906240-g25bk9eiiec29k9dt807hebmbqa64v2b.apps.googleusercontent.com';
+  const googleRedirectUri = Platform.OS === 'android'
+    ? `com.googleusercontent.apps.${googleAndroidClientId.replace('.apps.googleusercontent.com', '')}://oauthredirect`
+    : undefined;
 
   // Google Auth configuration
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '148707906240-89fv5lp1aikj89h9pioihipd8m9hej7n.apps.googleusercontent.com',
-    androidClientId: '148707906240-g25bk9eiiec29k9dt807hebmbqa64v2b.apps.googleusercontent.com',
+    androidClientId: googleAndroidClientId,
+    ...(Platform.OS === 'android' ? { redirectUri: googleRedirectUri } : {}),
   });
 
   // Handle Google Sign-In response
@@ -39,7 +44,11 @@ const LoginScreen = ({ navigation }) => {
       handleGoogleResponse(response);
     } else if (response?.type === 'error') {
       setIsGoogleLoading(false);
-      Alert.alert('Google Sign-In Failed', 'Please try again');
+      console.log('Google Sign-In Error:', response);
+      Alert.alert('Google Sign-In Failed', response?.error?.message || 'Please try again');
+    } else if (response?.type === 'cancel' || response?.type === 'dismiss') {
+      setIsGoogleLoading(false);
+      // User cancelled, no need to show error
     }
   }, [response]);
 
