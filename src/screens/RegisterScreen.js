@@ -37,6 +37,11 @@ const RegisterScreen = ({ navigation }) => {
     setIsGoogleLoading(true);
     try {
       await GoogleSignin.hasPlayServices();
+      const hasPreviousSignIn = GoogleSignin.hasPreviousSignIn();
+      if (hasPreviousSignIn) {
+        // Force account picker by clearing the last signed-in user.
+        await GoogleSignin.signOut();
+      }
       const userInfo = await GoogleSignin.signIn();
       
       const idToken = userInfo.data?.idToken;
