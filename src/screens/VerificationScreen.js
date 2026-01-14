@@ -10,6 +10,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../services/api';
 
@@ -94,6 +95,37 @@ const VerificationScreen = ({ navigation, route }) => {
     }
   };
 
+  const handlePasteCode = async () => {
+    try {
+      const clipboardContent = await Clipboard.getStringAsync();
+      // Extract only digits from clipboard
+      const digits = clipboardContent.replace(/[^0-9]/g, '');
+      
+      if (digits.length >= 6) {
+        const newCode = digits.slice(0, 6).split('');
+        setCode(newCode);
+        // Auto-verify after paste
+        handleVerify(newCode.join(''));
+      } else if (digits.length > 0) {
+        // Partial code - fill what we have
+        const newCode = [...code];
+        for (let i = 0; i < digits.length && i < 6; i++) {
+          newCode[i] = digits[i];
+        }
+        setCode(newCode);
+        // Focus on the next empty input
+        const nextEmpty = newCode.findIndex(d => !d);
+        if (nextEmpty !== -1) {
+          inputRefs.current[nextEmpty]?.focus();
+        }
+      } else {
+        Alert.alert('No Code Found', 'No verification code found in clipboard');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to read clipboard');
+    }
+  };
+
   const handleResendCode = async () => {
     if (countdown > 0) return;
 
@@ -150,6 +182,14 @@ const VerificationScreen = ({ navigation, route }) => {
             />
           ))}
         </View>
+
+        <TouchableOpacity
+          style={styles.pasteButton}
+          onPress={handlePasteCode}
+          disabled={isLoading}
+        >
+          <Text style={styles.pasteButtonText}>📋 Paste Code</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.verifyButton, isLoading && styles.verifyButtonDisabled]}
@@ -231,7 +271,7 @@ const styles = StyleSheet.create({
   codeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    marginBottom: 16,
   },
   codeInput: {
     width: 48,
@@ -248,6 +288,16 @@ const styles = StyleSheet.create({
   codeInputFilled: {
     borderColor: '#007AFF',
     backgroundColor: '#f0f7ff',
+  },
+  pasteButton: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    marginBottom: 20,
+  },
+  pasteButtonText: {
+    fontSize: 16,
+    color: '#007AFF',
+    fontWeight: '600',
   },
   verifyButton: {
     backgroundColor: '#007AFF',
