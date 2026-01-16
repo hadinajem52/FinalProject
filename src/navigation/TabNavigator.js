@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,24 +16,11 @@ const Stack = createNativeStackNavigator();
 
 const CustomTabBarButton = ({ children, onPress }) => (
   <TouchableOpacity
-    style={{
-      top: -20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      ...styles.shadow
-    }}
+    style={styles.fabWrapper}
     onPress={onPress}
+    activeOpacity={0.9}
   >
-    <View
-      style={{
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        backgroundColor: '#d32f2f',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
+    <View style={styles.fabButton}>
       {children}
     </View>
   </TouchableOpacity>
@@ -50,7 +37,7 @@ const ReportsStack = () => {
       <Stack.Screen 
         name="ReportIncident" 
         component={ReportIncidentScreen}
-        options={{ title: 'Report Incident' }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -78,10 +65,7 @@ const TabNavigator = () => {
         tabBarActiveTintColor: '#1a73e8',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
-        tabBarStyle: {
-            height: 60,
-            paddingBottom: 5,
-        }
+        tabBarStyle: styles.tabBar
       })}
     >
       <Tab.Screen name="Dashboard" component={HomeScreen} />
@@ -91,15 +75,14 @@ const TabNavigator = () => {
         name="SubmitReport" 
         component={ReportIncidentScreen}
         options={{
-            tabBarIcon: ({ focused }) => (
-                <Ionicons name="add" size={40} color="white" />
-            ),
+          tabBarIcon: () => (
+            <Ionicons name="add" size={28} color="white" style={styles.fabIcon} />
+          ),
             tabBarButton: (props) => (
                 <CustomTabBarButton {...props} />
             ),
             tabBarLabel: () => null,
-            headerShown: true,
-            title: 'Report Incident'
+          headerShown: false
         }}
       />
 
@@ -110,15 +93,58 @@ const TabNavigator = () => {
 };
 
 const styles = StyleSheet.create({
-  shadow: {
-    shadowColor: '#7F5DF0',
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
+  tabBar: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 16,
+    height: 72,
+    paddingBottom: 10,
+    paddingTop: 10,
+    borderRadius: 24,
+    backgroundColor: '#fff',
+    borderTopWidth: 0,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  fabWrapper: {
+    top: -28,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fabButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#6C63FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 6,
+    borderColor: '#fff',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.18,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
+  },
+  fabIcon: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
   }
 });
 

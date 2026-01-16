@@ -246,9 +246,6 @@ const MyReportsScreen = ({ navigation }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>My Reports</Text>
         <Text style={styles.headerSubtitle}>
           {pagination ? `${pagination.total} total report${pagination.total !== 1 ? 's' : ''}` : ''}
@@ -300,23 +297,18 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 20,
   },
-  backButton: {
-    marginBottom: 10,
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 4,
+    textAlign: 'center',
   },
   headerSubtitle: {
     fontSize: 14,
     color: '#fff',
     opacity: 0.9,
+    textAlign: 'center',
   },
   filterContainer: {
     backgroundColor: '#fff',
